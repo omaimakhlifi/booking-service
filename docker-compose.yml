@@ -1,0 +1,15 @@
+services:
+
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: hestia-db
+    environment:
+      POSTGRES_USER: oumaima
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: hestia_booking
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
