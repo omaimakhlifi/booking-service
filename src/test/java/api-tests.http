@@ -1,0 +1,13 @@
+### Créer une nouvelle chambre
+POST http://localhost:8081/api/rooms
+Content-Type: application/json
+
+{
+  "roomNumber": "101",
+  "roomType": "SINGLE",
+  "priceByNight": 85.0,
+  "isAvailable": true
+}
+
+### Lister toutes les chambres
+GET http://localhost:8081/api/rooms

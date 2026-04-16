@@ -19,12 +19,15 @@ public class RoomServiceImpl implements IRoomService{
 
     @Override
     public Room getRoomByID(Long id) {
-        return roomRepository.findById(id).orElseThrow(()->new RuntimeException("room not found winth id:" + id ));
+        return roomRepository.findById(id).orElseThrow(()->new RuntimeException("room not found with id:" + id ));
     }
 
     @Override
     public Room createRoom(Room room) {
-        return null;
+
+        if(roomRepository.existsByRoomNumber(room.getRoomNumber()))
+            throw new RuntimeException("La chambre n°" + room.getRoomNumber() + "existe déja");
+        return roomRepository.save(room);
     }
 
 
