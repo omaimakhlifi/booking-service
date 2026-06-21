@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
 
   postgres-db:
@@ -11,6 +13,9 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - hestia-network
 
   minio:
     image: minio/minio
@@ -24,7 +29,39 @@ services:
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
+    networks:
+      - hestia-network
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: hestia-keycloak
+    command: start-dev
+    environment:
+      # Identifiants pour te connecter à l'interface d'administration
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      
+      # Connexion à ta base PostgreSQL "hestia-db"
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-db:5432/hestia_booking
+      KC_DB_USERNAME: oumaima
+      KC_DB_PASSWORD: secret
+      KC_DB_SCHEMA: keycloak_schema # Isole les tables de Keycloak dans un schéma à part
+      
+      # Configurations nécessaires pour le développement local (HTTP)
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db
+    networks:
+      - hestia-network
 
 volumes:
   postgres_data:
   minio_data:
+
+networks:
+  hestia-network:
+    driver: bridge
